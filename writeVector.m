@@ -3,14 +3,22 @@ function writeVector( fname, W, colheaders )
 %   Detailed explanation goes here
 
 f = fopen( fname, 'w' );
-if nargin > 2
-    for j = 1 : length( colheaders )
+for j = 1 : length( W )
+    if nargin > 2
         fprintf( f, '%s ', colheaders{j} );
     end
-    fprintf( f, '\n' );
+    fprintf( f, '%f\n', W(j) );
 end
-fprintf( f, '%f ', W );
-fprintf( f, '\n' );
+
+% if nargin > 2
+%     for j = 1 : length( colheaders )
+%         fprintf( f, '%s ', colheaders{j} );
+%     end
+%     fprintf( f, '\n' );
+% end
+% fprintf( f, '%f ', W );
+% fprintf( f, '\n' );
+
 fclose( f );
 
 

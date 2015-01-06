@@ -1,7 +1,15 @@
-function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kfold, lambdas, time )
+function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kfold, lambdas, roc, time )
     
     titleSize = 24;
     scatterMarker = 50;
+    
+    LEVEL = 0;
+    INDENT = '    ';
+    ID = '';
+    
+    if nargin < 8
+        roc = '';
+    end
     
     if nargin < 7
         lambdas = [];
@@ -32,19 +40,21 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
     
     for i = 1 : length( kmers )
         kmer = kmers{i};
+        ID = kmer;
         [ Xtrain, Ytrain, Xtest, Ytest, colheaders, fname ] = readData( id, bp, kmer );
         fprintf( '\nTraining model on %s...\n', fname );
-        fprintf( report, '%s model:\n', kmer );
+        record( 'Model:\n' );
+        DOWN_LEVEL();
         [ M, lambda, xvalerr, ~ ] = ridgeRegression( Xtrain, Ytrain, lambdas, ~use_bias, kfold );
         models{i} = struct( 'weights', M );
         
         if use_bias
             colheaders = [ {'Bias'}, colheaders ] ;
         end
-        fname = [ output name '_' kmer '_weights.txt' ];
-        writeVector( fname, M, colheaders );
+        weightsfile = [ output name '_' kmer '_weights.txt' ];
+        writeVector( weightsfile, M, colheaders );
 
-        fprintf( report, '    Weights: %s\n', fname );
+        record( 'Weights: %s\n', weightsfile );
         
         xlab = 'log_{10}\lambda';
         ylab = 'Mean Squared Error';
@@ -53,15 +63,20 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
         plotParameterSelection( log10(lambdas), xvalerr, lambdas == lambda, ...
             xlab, ylab, [ mTitle ' Model Selection' ], plot_scatter, res, format, true );
         
-        fprintf( report, '    %d-fold cross validation:\n', kfold );
-        fprintf( report, '        Lambdas: ');
+        record( 'Cross validation:\n' );
+        DOWN_LEVEL();
+        ID = [ kmer '-xval' ];
+        record( 'k-fold: %f\n', kfold );
+        record( 'Lambdas: ');
         fprintf( report, '%f ', lambdas );
         fprintf( report, '\n' );
-        fprintf( report, '        MSE: ');
+        record( 'MSE: ');
         fprintf( report, '%f ', xvalerr );
         fprintf( report, '\n');
-        fprintf( report, '        Lambda: %f\n', lambda );
-        fprintf( report, '        Plot: %s\n', plot_scatter );
+        record( 'Lambda: %f\n', lambda );
+        record( 'Plot: %s\n', plot_scatter );
+        UP_LEVEL();
+        ID = kmer;
         
         fprintf( '\nTesting model on training set...\n' );
         Yh = predict( Xtrain, M );
@@ -86,11 +101,14 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
         print( f, plot_scatter, res, format );
         close(f);
         
-        fprintf( report, '    Training:\n' );
-        fprintf( report, '        MSE: %f\n', err );
-        fprintf( report, '        Actual vs Predicted R^2: %f\n', r2 );
-        fprintf( report, '        Plots:\n');
-        fprintf( report, '            %s\n', plot_scatter);
+        record( 'Training:\n' );
+        DOWN_LEVEL();
+        ID = [ kmer '-train' ];
+        record( 'MSE: %f\n', err );
+        record( 'r2: %f\n', r2 );
+        record( 'Plot: %s\n', plot_scatter);
+        UP_LEVEL();
+        ID = kmer;
         
         fprintf( '\nTesting model on testing set...\n' );
         Yh = predict( Xtest, M );
@@ -114,13 +132,29 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
         print( f, plot_scatter, res, format );
         close(f);
         
-        fprintf( report, '    Testing:\n' );
-        fprintf( report, '        MSE: %f\n', err );
-        fprintf( report, '        Actual vs Predicted R^2: %f\n', r2 );
-        fprintf( report, '        Plots:\n');
-        fprintf( report, '            %s\n', plot_scatter);
-        fprintf( report, '\n' );
+        record( 'Testing:\n' );
+        DOWN_LEVEL();
+        ID = [ kmer '-test' ];
+        record( 'MSE: %f\n', err );
+        record( 'r2: %f\n', r2 );
+        record( 'Plot: %s\n', plot_scatter);
+        UP_LEVEL();
+        ID = kmer;
         
+        fprintf( '\n' );
+        
+        [ auc, opt, rocfig ] = generateROC( roc, weightsfile, 'ridge', output );
+        record( 'ROC:\n' );
+        DOWN_LEVEL();
+        ID = [ kmer '-roc' ];
+        record( 'AUC: %f\n', auc );
+        record( 'OPT: %f, %f\n', opt(1), opt(2) );
+        record( 'Plot: %s\n', rocfig );
+        UP_LEVEL();
+        ID = kmer;
+        
+        UP_LEVEL();
+        fprintf( report, '\n' );
         fprintf( '\n' );
         
     end
@@ -130,6 +164,31 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
 
 
 
+    function DOWN_LEVEL()
+        LEVEL = LEVEL + 1;
+    end
+
+    function UP_LEVEL()
+        LEVEL = LEVEL - 1;
+        if LEVEL < 0
+            LEVEL = 0;
+        end
+    end
+    
+    function record( str, varargin )
+        indt = LEVEL;
+        fprintf( report,  '[%s]', ID );
+        while indt > 0
+            fprintf( report, INDENT );
+            indt = indt - 1;
+        end
+        fprintf( report, str, varargin{:} );
+    end
+
+    function recordLn( str, varargin )
+        record( str, varargin{:} );
+        fprintf( report, '\n' );
+    end
 
 
 

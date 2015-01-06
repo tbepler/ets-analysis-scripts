@@ -30,19 +30,19 @@ for i = 1 : length(ids)
 end
 
 args = {
-    { 'ELK1_uPBM_log', true }
-    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true }
-    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', false }
-    { 'ELK1_10nM_bound_log_combinedReps_fwd', true }
-    { 'ELK1_10nM_bound_log_combinedReps_fwd', false }
-    { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', true }
-    { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', false }
-    { 'ELK1_50nM_bound_log_combinedReps_fwd', true }
-    { 'ELK1_50nM_bound_log_combinedReps_fwd', false }
-    { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', true }
-    { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', false }
-    { 'ELK1_100nM_bound_log_combinedReps_fwd', true }
-    { 'ELK1_100nM_bound_log_combinedReps_fwd', false }
+    %{ 'ELK1_uPBM_log', true }
+    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs', {'1mer'} }
+%     { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', false }
+%     { 'ELK1_10nM_bound_log_combinedReps_fwd', true }
+%     { 'ELK1_10nM_bound_log_combinedReps_fwd', false }
+%     { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', true }
+%     { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', false }
+%     { 'ELK1_50nM_bound_log_combinedReps_fwd', true }
+%     { 'ELK1_50nM_bound_log_combinedReps_fwd', false }
+%     { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', true }
+%     { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', false }
+%     { 'ELK1_100nM_bound_log_combinedReps_fwd', true }
+%     { 'ELK1_100nM_bound_log_combinedReps_fwd', false }
     };
 
 % args = {
@@ -72,7 +72,7 @@ args = {
 % %     { 'GABPA', 25, 'rvs' }
 %     };
 
-%use_bias = true;
+def_use_bias = true;
 kmers = { '1mer', '1-2mer', '1-3mer' };
 bpcores = { '' ...
 %     '12', ...
@@ -118,10 +118,24 @@ if ridge
         for j = 1 : length( bpcores )
             core = bpcores{j};
             arg = args{i};
-            use_bias = arg{2};
+            if length( arg ) >= 2
+                use_bias = arg{2};
+            else
+                use_bias = def_use_bias;
+            end
+            if length( arg ) >= 3
+                roc = arg{3};
+            else
+                roc = '';
+            end
+            if length( arg ) >= 4
+                this_kmers = arg{4};
+            else
+                this_kmers = kmers;
+            end
             arg = arg{1};
             odir = toDir( dir, arg, core, use_bias );
-            buildModelsRidgeRegression( odir, arg, core, kmers, use_bias, kfold, lambdas, time );
+            buildModelsRidgeRegression( odir, arg, core, this_kmers, use_bias, kfold, lambdas, roc, time );
         end
     end
 end
