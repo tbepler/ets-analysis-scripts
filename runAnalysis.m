@@ -30,19 +30,17 @@ for i = 1 : length(ids)
 end
 
 args = {
-    %{ 'ELK1_uPBM_log', true }
-    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs', {'1mer', '1-2mer'} }
-%     { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', false }
-%     { 'ELK1_10nM_bound_log_combinedReps_fwd', true }
-%     { 'ELK1_10nM_bound_log_combinedReps_fwd', false }
-%     { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', true }
-%     { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', false }
-%     { 'ELK1_50nM_bound_log_combinedReps_fwd', true }
-%     { 'ELK1_50nM_bound_log_combinedReps_fwd', false }
-%     { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', true }
-%     { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', false }
-%     { 'ELK1_100nM_bound_log_combinedReps_fwd', true }
-%     { 'ELK1_100nM_bound_log_combinedReps_fwd', false }
+    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ELK1_50nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ELK1_100nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ELK1_uPBM_log', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ETS1_100nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/ets1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ETS1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/ets1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'ETS1_uPBM_log', true, 'idr_peaks/ets1AndNonOverlappingDnaseLabeled.seqs' }
+    { 'GABPA_100nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/gabpaAndNonOverlappingDnaseLabeled.seqs' }
+    { 'GABPA_50nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/gabpaAndNonOverlappingDnaseLabeled.seqs' }
+    { 'GABPA_25nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/gabpaAndNonOverlappingDnaseLabeled.seqs' }
+    { 'GABPA_uPBM_log', true, 'idr_peaks/gabpaAndNonOverlappingDnaseLabeled.seqs' }
     };
 
 % args = {
