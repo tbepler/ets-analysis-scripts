@@ -1,4 +1,4 @@
-function [AUC,OPT, outname ] = plotROC( output, dataf, color, plottext, display, name )
+function [AUC,OPT, outname ] = plotROC( output, dataf, color, plottext, display, name, reverse_labels )
 %PLOTROC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -8,6 +8,10 @@ set( 0, 'DefaultLineLinewidth', 2.5 );
 
 res = '-r900';
 format = '-depsc';
+
+if nargin < 7
+    reverse_labels = false;
+end
 
 if nargin < 3
     color = {};
@@ -29,18 +33,23 @@ end
 
 if isempty( name )
     if iscell( dataf )
-        [ pathstr, name, ~ ] = fileparts( dataf{1} );
+        [ ~, name, ~ ] = fileparts( dataf{1} );
         for i = 2 : length( dataf )
             [ ~, n, ~ ] = fileparts( dataf{i} );
             name = [ name '_and_' n ];
         end
     else
-        [ pathstr, name, ~ ] = fileparts( dataf );
+        [ ~, name, ~ ] = fileparts( dataf );
     end
     name = [ name '_roccurve.eps' ];
 end
 if isempty( output )
-    output = [ pathstr '/' ];
+    if iscell( dataf )
+        [ pathstr, ~, ~ ] = fileparts( dataf{1} );
+    else
+        [ pathstr, ~, ~ ] = fileparts( dataf );
+    end
+    output = [ pathstr '/figures/' ];
 end
 
 %figures = [ output 'figures/' ];
@@ -61,13 +70,13 @@ f = figure( figargs{:} );
 hold on;
 
 if iscell( dataf )
-    AUC = cell( length( dataf ) );
-    OPT = cell( length( dataf ) );
+    AUC = zeros( length( dataf ), 1 );
+    OPT = zeros( length( dataf ), 2 );
     plotargs = {};
     for i = 1 : length(dataf)
         [a,o,x,y] = readAndROC( dataf{i} );
-        AUC{i} = a;
-        OPT{i} = o;
+        AUC(i) = a;
+        OPT(i,:) = o;
         plotargs = [ plotargs, {x}, {y} ];
         if ~isempty( color )
             plotargs = [ plotargs, { color{i} } ];
@@ -100,6 +109,16 @@ end
         data = importdata( dataf );
         labels = data( :, 1);
         predictions = data(:,2);
+        
+        if reverse_labels
+            for ii = 1 : numel( labels )
+                if labels( ii ) == 1
+                    labels( ii ) = 0;
+                else
+                    labels( ii ) = 1;
+                end
+            end
+        end
         
         [X,Y,T,AUC,OPT,~,~] = perfcurve( labels, predictions, 1 );
         if length(X) > 3000
