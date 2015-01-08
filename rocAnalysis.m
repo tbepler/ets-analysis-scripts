@@ -8,7 +8,10 @@ timestr = datestr( now, time_format );
 peaksdir = 'idr_peaks/';
 rocdir = [ 'roc/' timestr '/' ];
 peaks = {
-    'wgEncodeSydhTfbsK562Elk112771IggrabAlnPoolRep1-2.MACS2-IDR0.05_peaks_0_and_wgEncodeHaibTfbsK562Ets1V0416101AlnPoolRep1-2.MACS2-IDR0.05_peaks_1.seqs'
+%    'wgEncodeSydhTfbsK562Elk112771IggrabAlnPoolRep1-2.MACS2-IDR0.05_peaks_0_and_wgEncodeHaibTfbsK562Ets1V0416101AlnPoolRep1-2.MACS2-IDR0.05_peaks_1.seqs'
+    'elk1AndNonOverlappingDnaseLabeled.seqs'
+    'ets1AndNonOverlappingDnaseLabeled.seqs'
+    'gabpaAndNonOverlappingDnaseLabeled.seqs'
 };
 
 models = {
@@ -16,6 +19,14 @@ models = {
     'models/ridge-regression/ELK1_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/ELK1_100nM_boundNeg_log_combinedReps_fwd_1-2mer_weights.txt'
     'models/ridge-regression/ELK1_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/ELK1_100nM_boundNeg_log_combinedReps_fwd_1-3mer_weights.txt'
     'kmer_pwm/ELK1_pwm.txt'
+    'models/ridge-regression/ETS1_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/ETS1_100nM_boundNeg_log_combinedReps_fwd_1mer_weights.txt'
+    'models/ridge-regression/ETS1_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/ETS1_100nM_boundNeg_log_combinedReps_fwd_1-2mer_weights.txt'
+    'models/ridge-regression/ETS1_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/ETS1_100nM_boundNeg_log_combinedReps_fwd_1-3mer_weights.txt'
+    'kmer_pwm/ETS1_pwm.txt'
+    'models/ridge-regression/GABPA_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/GABPA_100nM_boundNeg_log_combinedReps_fwd_1mer_weights.txt'
+    'models/ridge-regression/GABPA_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/GABPA_100nM_boundNeg_log_combinedReps_fwd_1-2mer_weights.txt'
+    'models/ridge-regression/GABPA_100nM_boundNeg_log_combinedReps_fwd_2015_01_08_00.23.14/GABPA_100nM_boundNeg_log_combinedReps_fwd_1-3mer_weights.txt'
+    'kmer_pwm/GABPA_pwm.txt'
 };
 
 suffix = 'ELK1_allROCs';

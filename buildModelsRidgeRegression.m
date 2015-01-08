@@ -36,38 +36,72 @@ function models = buildModelsRidgeRegression(output, id, bp, kmers, use_bias, kf
     
     for i = 1 : length( kmers )
         kmer = kmers{i};
+        if isempty( kmer )
+            kmer = 'pkk';
+        end
         names{i} = [ report.name '_' kmer ];
         report.setKmer( kmer );
-        [ Xtrain, Ytrain, Xtest, Ytest, colheaders, fname ] = readData( id, bp, kmer );
-        fprintf( '\nTraining model on %s...\n', fname );
-        report.printf( 'Model:\n' );
-        report.down_level();
-        [ M, lambda, xvalerr, ~ ] = ridgeRegression( Xtrain, Ytrain, lambdas, ~use_bias, kfold );
-        models{i} = struct( 'weights', M );
-        
-        if use_bias
-            colheaders = [ {'Bias'}, colheaders ] ;
+        if strcomp( kmer, 'pkk' )
+            if ~isempty( bp )
+                bp = [ '_' bp 'bpcore' ];
+            end
+            fname = [ id bp ];
+            test = [ 'test/' id '_test' bp kmer '.txt' ];
+            train = [ 'train/' id '_train' bp kmer '.txt' ];
+            
+            fprintf( '\nTraining model on %s...\n', fname );
+            report.printf( 'Model:\n' );
+            report.down_level();
+            
+            %determine lambda using cross validation on the 1-3mer feature
+            %set
+            [ Xtrain, Ytrain, ~, ~, ~, ~ ] = readData( id, bp, '1-3mer' );
+            train = @( x, y, l ) ridgeRegression( x, y, l, false );
+            [ lambda, ~ ] = crossValidate( Xtrain, Ytrain, kfold, lambdas, train, @predict, @mse );
+            report.printAndDisplayf( true, 'Lambda: %f\n', lambda );
+            Xtrain = [];
+            Ytrain = [];
+            
+            modelfile = [ report.outdir report.name '_pkkRidge.txt' ];
+            time_format = 'yyyy_mm_dd_HH.MM.SS';
+            timestr = datestr( time, time_format );
+            predfile = [ '.tmp.preds.' timestr ];
+            cmd = [ 'pkkridge train -d ' train ' -l ' num2str( lambda ) ' -m ' modelfile ' -p ' predfile ];
+            
+                
+        else
+            [ Xtrain, Ytrain, Xtest, Ytest, colheaders, fname ] = readData( id, bp, kmer );
+            fprintf( '\nTraining model on %s...\n', fname );
+            report.printf( 'Model:\n' );
+            report.down_level();
+            [ M, lambda, xvalerr, ~ ] = ridgeRegression( Xtrain, Ytrain, lambdas, ~use_bias, kfold );
+            models{i} = struct( 'weights', M );
+            
+            if use_bias
+                colheaders = [ {'Bias'}, colheaders ] ;
+            end
+            weightsfile = report.weights( M, colheaders, '' );
+            
+            report.crossValidation( kfold, lambdas, xvalerr, lambda, true );
+            
+            fprintf( '\nTesting model on training set...\n' );
+            Yh = predict( Xtrain, M );
+            report.predictions( true, Ytrain, Yh, 'train' );
+            
+            fprintf( '\nTesting model on testing set...\n' );
+            Yh = predict( Xtest, M );
+            report.predictions( true, Ytest, Yh, 'test' );
+            
+            fprintf( '\n' );
+            
+            model_peak_scores{i} = report.roc( roc, weightsfile, 'ridge', true );
+            
+            report.up_level();
+            report.setId( '' );
+            report.printf( '\n' );
+            fprintf( '\n' );
+            
         end
-        weightsfile = report.weights( M, colheaders, '' );
-        
-        report.crossValidation( kfold, lambdas, xvalerr, lambda, true );
-        
-        fprintf( '\nTesting model on training set...\n' );
-        Yh = predict( Xtrain, M );
-        report.predictions( true, Ytrain, Yh, 'train' );
-        
-        fprintf( '\nTesting model on testing set...\n' );
-        Yh = predict( Xtest, M );
-        report.predictions( true, Ytest, Yh, 'test' );
-        
-        fprintf( '\n' );
-        
-        model_peak_scores{i} = report.roc( roc, weightsfile, 'ridge', true );
-        
-        report.up_level();
-        report.setId( '' );
-        report.printf( '\n' );
-        fprintf( '\n' );
         
     end
     
