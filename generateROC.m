@@ -1,4 +1,4 @@
-function [auc, opt, figname] = generateROC( seqs, weightsfile, modeltype, outdir, display )
+function [auc, opt, figname, scoresfile] = generateROC( seqs, weightsfile, modeltype, outdir, display )
 
 if isempty( seqs )
     return;
@@ -29,7 +29,8 @@ system( cmd );
 if display
     fprintf( 'Plotting ROC curve\n' );
 end
-[auc, opt, figname] = plotROC( figdir, scoresname, false, false );
+[auc, opt, figname] = plotROC( figdir, scoresname, {}, false, false );
+scoresfile = scoresname;
 
 
 end

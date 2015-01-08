@@ -31,7 +31,7 @@ end
 
 args = {
     %{ 'ELK1_uPBM_log', true }
-    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs', {'1mer'} }
+    { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', true, 'idr_peaks/elk1AndNonOverlappingDnaseLabeled.seqs', {'1mer', '1-2mer'} }
 %     { 'ELK1_10nM_boundNeg_log_combinedReps_fwd', false }
 %     { 'ELK1_10nM_bound_log_combinedReps_fwd', true }
 %     { 'ELK1_10nM_bound_log_combinedReps_fwd', false }
