@@ -11,7 +11,9 @@ for F in $FILES; do
     FWD="${NAME}_fwd.${EXT}"
     RVS="${NAME}_rvs.${EXT}"
 
-    orient -l -e -p $PWM -s $F -f $FWD -r $RVS
+    EXE="/home/tbepler/gordan_lab/ets/ETS_customarray_analysis/scripts/cpp/orient" 
+
+    $EXE -l -e -p $PWM -s $F -f $FWD -r $RVS
 
     #grep 'F' $ORNT > $FWD
     #grep 'R' $ORNT > $RVS
