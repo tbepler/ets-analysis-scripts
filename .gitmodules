@@ -1,3 +1,3 @@
-[submodule "julia/regression"]
-	path = julia/regression
+[submodule "julia/Regression"]
+	path = julia/Regression
 	url = https://github.com/tbepler/julia-regression.git
